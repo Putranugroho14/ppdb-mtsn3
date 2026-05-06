@@ -1,0 +1,45 @@
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const { getProfile, createOrUpdateProfile, uploadDocument, submitDaftarUlang } = require('../controllers/userController');
+const { generateBuktiPendaftaran, generateBuktiDaftarUlang, generateKartuPeserta } = require('../controllers/pdfController');
+const { protect } = require('../middleware/authMiddleware');
+
+// Multer Storage Configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png|pdf/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only images and PDFs are allowed!'));
+  }
+});
+
+router.use(protect);
+
+router.get('/profile', getProfile);
+router.post('/profile', createOrUpdateProfile);
+router.post('/upload', upload.single('document'), uploadDocument);
+router.get('/print-bukti-v3/:id', generateBuktiPendaftaran);
+router.get('/print-form-emis/:id', generateBuktiDaftarUlang);
+router.get('/print-kartu-peserta/:id', generateKartuPeserta);
+router.post('/daftar-ulang', submitDaftarUlang);
+
+module.exports = router;
