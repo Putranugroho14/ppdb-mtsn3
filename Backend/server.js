@@ -14,6 +14,8 @@ app.use(cors({
   origin: [
     'http://localhost:3000', 
     'http://localhost:3001', 
+    'https://ppdb-mtsn3-web.vercel.app',
+    'https://ppdb-mtsn3.vercel.app',
     process.env.CLIENT_URL // Allow production frontend URL from .env
   ].filter(Boolean),
   credentials: true
