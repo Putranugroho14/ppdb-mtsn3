@@ -36,6 +36,11 @@ app.use('/api/superadmin', superAdminRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/announcements', announcementRoutes);
 
+// Root Health Check Route
+app.get('/', (req, res) => {
+  res.status(200).json({ message: "PPDB MTsN 3 Sanggau API is running successfully on Vercel!" });
+});
+
 // Start Server
 const startServer = async () => {
   try {
