@@ -66,4 +66,12 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-startServer();
+// If not running on Vercel, start the server normally
+if (process.env.VERCEL !== '1') {
+  startServer();
+} else {
+  // For Vercel Serverless
+  connectDB().then(() => sequelize.sync()).catch(console.error);
+}
+
+module.exports = app;
