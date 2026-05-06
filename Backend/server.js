@@ -3,6 +3,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
+require('mysql2'); // Explicitly require for Vercel static analyzer
 
 const { connectDB, sequelize } = require('./src/config/database');
 
