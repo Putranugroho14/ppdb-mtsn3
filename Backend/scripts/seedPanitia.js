@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-const { sequelize } = require('./src/config/database');
-const User = require('./src/models/User');
+const { sequelize } = require('../src/config/database');
+const User = require('../src/models/User');
 
 const seedPanitia = async () => {
   try {
