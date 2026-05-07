@@ -148,7 +148,12 @@ const uploadDocument = async (req, res) => {
 
     res.json({ message: 'Dokumen berhasil disimpan', berkas });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('[uploadDocument] ERROR:', error);
+    res.status(500).json({ 
+      message: error.message,
+      detail: error.http_code || error.code || null,
+      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+    });
   }
 };
 
