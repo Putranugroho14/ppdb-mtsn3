@@ -69,9 +69,7 @@ const UserDashboard = ({ tab }) => {
 
     setUploadingDoc(type);
     try {
-      await API.post('/user/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await API.post('/user/upload', formData);
       await fetchProfile();
       setSuccessMessage('Berkas Anda telah berhasil diunggah dan disimpan!');
       setShowSuccessModal(true);

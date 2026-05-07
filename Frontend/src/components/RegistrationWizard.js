@@ -355,9 +355,7 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
           const uploadFormData = new FormData();
           uploadFormData.append('document', fileData);
           uploadFormData.append('type', type);
-          await API.post('/user/upload', uploadFormData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
+          await API.post('/user/upload', uploadFormData);
         }
       }
 
