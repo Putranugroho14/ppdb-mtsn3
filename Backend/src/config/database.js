@@ -25,8 +25,8 @@ const connectDB = async () => {
     await sequelize.authenticate();
     console.log('✅ MySQL Connected successfully via Sequelize');
   } catch (error) {
-    console.error('❌ Unable to connect to the database:', error);
-    process.exit(1);
+    console.error('❌ Unable to connect to the database:', error.message);
+    // process.exit(1); // Removed: Do not crash serverless function on DB error
   }
 };
 
