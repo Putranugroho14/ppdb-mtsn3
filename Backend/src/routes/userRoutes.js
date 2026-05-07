@@ -25,16 +25,6 @@ const upload = multer({
   }
 });
 
-router.use(protect);
-
-router.get('/profile', getProfile);
-router.post('/profile', createOrUpdateProfile);
-router.post('/upload', upload.single('document'), uploadDocument);
-router.get('/print-bukti-v3/:id', generateBuktiPendaftaran);
-router.get('/print-form-emis/:id', generateBuktiDaftarUlang);
-router.get('/print-kartu-peserta/:id', generateKartuPeserta);
-router.post('/daftar-ulang', submitDaftarUlang);
-
 router.get('/debug-cloudinary', async (req, res) => {
   const cloudinary = require('../config/cloudinary');
   const cfg = cloudinary.config();
@@ -46,5 +36,15 @@ router.get('/debug-cloudinary', async (req, res) => {
     node_env: process.env.NODE_ENV,
   });
 });
+
+router.use(protect);
+
+router.get('/profile', getProfile);
+router.post('/profile', createOrUpdateProfile);
+router.post('/upload', upload.single('document'), uploadDocument);
+router.get('/print-bukti-v3/:id', generateBuktiPendaftaran);
+router.get('/print-form-emis/:id', generateBuktiDaftarUlang);
+router.get('/print-kartu-peserta/:id', generateKartuPeserta);
+router.post('/daftar-ulang', submitDaftarUlang);
 
 module.exports = router;
