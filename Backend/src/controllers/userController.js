@@ -121,8 +121,12 @@ const uploadDocument = async (req, res) => {
           { folder: 'ppdb_uploads', resource_type: 'auto' },
           (error, result) => {
             if (error) {
-              console.error('Cloudinary Upload Error:', error);
-              return reject(new Error('Gagal mengunggah gambar ke Cloudinary. Periksa konfigurasi API Anda.'));
+              console.error('Cloudinary Upload Error Full:', JSON.stringify(error));
+              // Pass the actual Cloudinary error so we can diagnose it
+              const err = new Error(error.message || 'Cloudinary error');
+              err.http_code = error.http_code;
+              err.name = error.name;
+              return reject(err);
             }
             resolve(result.secure_url);
           }
