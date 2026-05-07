@@ -574,7 +574,10 @@ const Applicants = () => {
                   <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                     <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">Kontak & Pendidikan</h4>
                     <div className="space-y-4">
-                      <DetailRow label="Sekolah Asal" value={selectedApp.schoolOrigin} />
+                      <DetailRow label="Sekolah Asal" value={
+                        selectedApp.schoolOrigin || selectedApp.sekolahAsalLainnya ||
+                        (() => { try { return JSON.parse(selectedApp.details || '{}').schoolOrigin; } catch(e) { return null; } })() || '-'
+                      } />
                       <DetailRow label="Tahun Lulus" value={selectedApp.graduationYear} />
                       <DetailRow label="No HP Orang Tua" value={selectedApp.parentPhone} />
                       <DetailRow label="Jalur Pendaftaran" value={selectedApp.jalurPendaftaran} />
