@@ -19,13 +19,7 @@ if (process.env.CLOUDINARY_URL) {
   });
 }
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'ppdb_uploads',
-    resource_type: 'auto', // Allow images and PDFs
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage: storage,

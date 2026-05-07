@@ -113,7 +113,22 @@ const uploadDocument = async (req, res) => {
       if (!req.file) {
         return res.status(400).json({ message: 'Tidak ada file yang diunggah.' });
       }
-      filePath = req.file.path.replace(/\\/g, '/');
+
+      // Upload buffer to Cloudinary using upload_stream
+      const cloudinary = require('cloudinary').v2;
+      filePath = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'ppdb_uploads', resource_type: 'auto' },
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary Upload Error:', error);
+              return reject(new Error('Gagal mengunggah gambar ke Cloudinary. Periksa konfigurasi API Anda.'));
+            }
+            resolve(result.secure_url);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
     }
 
     // Check if document already exists
