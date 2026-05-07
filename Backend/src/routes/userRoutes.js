@@ -35,4 +35,16 @@ router.get('/print-form-emis/:id', generateBuktiDaftarUlang);
 router.get('/print-kartu-peserta/:id', generateKartuPeserta);
 router.post('/daftar-ulang', submitDaftarUlang);
 
+router.get('/debug-cloudinary', async (req, res) => {
+  const cloudinary = require('../config/cloudinary');
+  const cfg = cloudinary.config();
+  res.json({
+    cloud_name: cfg.cloud_name || '❌ MISSING',
+    api_key: cfg.api_key ? `✅ ${String(cfg.api_key).slice(0,6)}...` : '❌ MISSING',
+    api_secret: cfg.api_secret ? '✅ SET' : '❌ MISSING',
+    cloudinary_url_env: process.env.CLOUDINARY_URL ? '✅ SET' : '❌ NOT SET',
+    node_env: process.env.NODE_ENV,
+  });
+});
+
 module.exports = router;
