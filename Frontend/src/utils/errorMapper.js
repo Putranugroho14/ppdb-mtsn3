@@ -24,18 +24,9 @@ export const mapErrorMessage = (error) => {
     message = 'Data yang Anda masukkan tidak valid. Silakan periksa kembali.';
   } else if (technicalMessage.includes('ECONNREFUSED')) {
     message = 'Server sedang tidak dapat dijangkau. Silakan hubungi administrator.';
-  } else {
-    // If we have a specific message from backend that is already in Indonesian, use it
-    // Otherwise, use a generic friendly message
-    const isIndonesian = /[a-zA-Z]/.test(technicalMessage) && (
-      technicalMessage.toLowerCase().includes('tidak') || 
-      technicalMessage.toLowerCase().includes('sudah') ||
-      technicalMessage.toLowerCase().includes('gagal') ||
-      technicalMessage.toLowerCase().includes('berhasil') ||
-      technicalMessage.toLowerCase().includes('salah')
-    );
-    
-    message = isIndonesian ? technicalMessage : 'Maaf, terjadi kendala saat memproses permintaan Anda. Silakan coba lagi.';
+    // If we have a specific message from backend, use it directly so the user knows what to fix.
+    // E.g., "Mohon lengkapi data wajib (NIK, Nama, Gender...)" or "NIK harus 16 digit angka"
+    message = technicalMessage || 'Maaf, terjadi kendala saat memproses permintaan Anda. Silakan coba lagi.';
   }
 
   return message;
