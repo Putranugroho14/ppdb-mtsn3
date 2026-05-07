@@ -1,4 +1,5 @@
 const { Pendaftar, Berkas, User, DaftarUlang } = require('../models');
+const cloudinary = require('../config/cloudinary');
 
 const getProfile = async (req, res) => {
   try {
@@ -115,7 +116,6 @@ const uploadDocument = async (req, res) => {
       }
 
       // Upload buffer to Cloudinary using upload_stream
-      const cloudinary = require('cloudinary').v2;
       filePath = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: 'ppdb_uploads', resource_type: 'auto' },
