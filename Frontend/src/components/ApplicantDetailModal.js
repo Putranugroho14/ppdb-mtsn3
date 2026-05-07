@@ -101,7 +101,7 @@ const ApplicantDetailModal = ({ isOpen, onClose, applicant }) => {
                   <div>
                     <h3 className="text-xs font-black text-primary-600 uppercase tracking-[0.2em] mb-4 border-b pb-2">Asal Sekolah & Jalur</h3>
                     <div className="space-y-1">
-                      <DetailItem icon={School} label="Sekolah Asal" value={applicant.previousSchool} color="text-amber-500" />
+                      <DetailItem icon={School} label="Sekolah Asal" value={applicant.schoolOrigin || applicant.sekolahAsalLainnya} color="text-amber-500" />
                       <DetailItem icon={GraduationCap} label="Jalur Pendaftaran" value={applicant.jalurPendaftaran || 'Reguler'} color="text-purple-500" />
                     </div>
                   </div>
