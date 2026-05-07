@@ -85,9 +85,15 @@ if (process.env.VERCEL !== '1') {
 // Global error handler for Multer/Cloudinary or other unhandled errors
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
-  if (err.name === 'MulterError' || err.message.includes('Cloudinary')) {
-    return res.status(500).json({ message: 'Gagal mengunggah file. Pastikan konfigurasi Cloudinary di Vercel sudah benar, atau ukuran file tidak terlalu besar.', technicalDetail: err.message });
+  
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ message: 'Ukuran file terlalu besar! Maksimal ukuran file adalah 2MB.' });
   }
+
+  if (err.name === 'MulterError' || err.message.includes('Cloudinary')) {
+    return res.status(500).json({ message: 'Gagal mengunggah file. Pastikan konfigurasi Cloudinary di Vercel sudah benar.', technicalDetail: err.message });
+  }
+  
   res.status(500).json({ message: err.message || 'Internal Server Error' });
 });
 

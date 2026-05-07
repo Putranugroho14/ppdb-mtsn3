@@ -301,6 +301,12 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
   const handleFileUpload = (e, docName) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError(`Ukuran file untuk ${docName} terlalu besar! Maksimal ukuran file adalah 2MB.`);
+        setShowErrorModal(true);
+        e.target.value = ''; // Reset input
+        return;
+      }
       setDocuments(prev => ({ ...prev, [docName]: file }));
     }
   };
