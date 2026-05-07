@@ -82,4 +82,13 @@ if (process.env.VERCEL !== '1') {
   connectDB().then(() => sequelize.sync()).catch(console.error);
 }
 
+// Global error handler for Multer/Cloudinary or other unhandled errors
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  if (err.name === 'MulterError' || err.message.includes('Cloudinary')) {
+    return res.status(500).json({ message: 'Gagal mengunggah file. Pastikan konfigurasi Cloudinary di Vercel sudah benar, atau ukuran file tidak terlalu besar.', technicalDetail: err.message });
+  }
+  res.status(500).json({ message: err.message || 'Internal Server Error' });
+});
+
 module.exports = app;
