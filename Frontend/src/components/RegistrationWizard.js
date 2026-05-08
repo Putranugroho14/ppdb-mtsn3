@@ -194,6 +194,7 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
 
         return {
           ...prev,
+          ...parsedDetails,
           nik: initialData.nik || parsedDetails.nik || '',
           nisn: initialData.nisn || parsedDetails.nisn || '',
           name: initialData.name || parsedDetails.name || initialData.User?.name || '',
@@ -228,7 +229,7 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
           nilaiRaportVGanjil: initialData.nilaiRaportVGanjil || parsedDetails.nilaiRaportVGanjil || '0',
           nilaiRaportVGenap: initialData.nilaiRaportVGenap || parsedDetails.nilaiRaportVGenap || '0',
           nilaiRaportVIGanjil: initialData.nilaiRaportVIGanjil || parsedDetails.nilaiRaportVIGanjil || '0',
-          ...parsedDetails,
+          birthCertificateNumber: initialData.birthCertificateNumber || parsedDetails.birthCertificateNumber || '',
         };
       });
 

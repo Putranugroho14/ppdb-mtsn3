@@ -101,8 +101,8 @@ const Verification = () => {
   const handleViewDocument = (app, type) => {
     const berkas = app.Berkas?.find(b => b.type === type);
     if (berkas && berkas.filePath) {
-      const fileName = berkas.filePath.split(/[\\/]/).pop();
-      window.open(`http://localhost:5000/uploads/${fileName}`, '_blank');
+      // filePath is now a Cloudinary URL — open directly
+      window.open(berkas.filePath, '_blank');
     } else {
       alert(`Dokumen ${type.toUpperCase()} belum diunggah.`);
     }
