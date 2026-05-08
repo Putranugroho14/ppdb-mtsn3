@@ -9,7 +9,14 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "server.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://ppdb-mtsn3-web.vercel.app",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization,Content-Type,Accept",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Max-Age": "0"
+      }
     }
   ]
 }
