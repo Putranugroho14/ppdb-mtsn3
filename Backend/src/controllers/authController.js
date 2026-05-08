@@ -64,6 +64,10 @@ const login = async (req, res) => {
     let user = null;
     let role = 'user';
 
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username dan password wajib diisi.' });
+    }
+
     // Logic: If username is 16 digits, assume student (Pendaftar)
     if (username.length === 16 && /^\d+$/.test(username)) {
       user = await Pendaftar.findOne({ where: { nik: username } });
