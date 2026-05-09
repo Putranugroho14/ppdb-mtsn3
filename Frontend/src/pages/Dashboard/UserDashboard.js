@@ -26,6 +26,7 @@ const UserDashboard = ({ tab }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [uploadingDoc, setUploadingDoc] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
   const fetchProfile = async () => {
     try {
@@ -154,8 +155,8 @@ const UserDashboard = ({ tab }) => {
   const renderProfile = () => {
     const isComplete = !!profile?.address;
 
-    if (!isComplete) {
-      return <RegistrationWizard initialData={profile} onComplete={fetchProfile} />;
+    if (!isComplete || isEditing) {
+      return <RegistrationWizard initialData={profile} onComplete={() => { setIsEditing(false); fetchProfile(); }} />;
     }
 
     let details = {};
@@ -185,7 +186,7 @@ const UserDashboard = ({ tab }) => {
                     Lihat Detail
                  </button>
                  {!['verified', 'accepted'].includes(profile.registrationStatus) && (
-                   <button onClick={() => setProfile({...profile, address: ''})} className="px-6 py-3.5 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl flex items-center gap-2">
+                   <button onClick={() => setIsEditing(true)} className="px-6 py-3.5 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl flex items-center gap-2">
                       <LayoutDashboard className="w-4 h-4" />
                       Edit Data
                    </button>
@@ -197,14 +198,26 @@ const UserDashboard = ({ tab }) => {
         {/* QUICK INFO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
            {/* RINGKASAN VERIFIKASI */}
-           <div className={`p-6 rounded-[32px] border flex items-center gap-5 shadow-sm ${['verified', 'accepted'].includes(profile.registrationStatus) ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100'}`}>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${['verified', 'accepted'].includes(profile.registrationStatus) ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
-                 {['verified', 'accepted'].includes(profile.registrationStatus) ? <CheckCircle2 className="w-6 h-6" /> : <Clock className="w-6 h-6" />}
+           <div className={`p-6 rounded-[32px] border flex items-center gap-5 shadow-sm ${
+             profile.registrationStatus === 'rejected' ? 'bg-red-50 border-red-100' :
+             ['verified', 'accepted'].includes(profile.registrationStatus) ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100'
+           }`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${
+                profile.registrationStatus === 'rejected' ? 'bg-red-500 text-white' :
+                ['verified', 'accepted'].includes(profile.registrationStatus) ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+              }`}>
+                 {profile.registrationStatus === 'rejected' ? <AlertCircle className="w-6 h-6" /> :
+                  ['verified', 'accepted'].includes(profile.registrationStatus) ? <CheckCircle2 className="w-6 h-6" /> : <Clock className="w-6 h-6" />}
               </div>
               <div>
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status Data</p>
-                 <p className={`font-black text-xs uppercase mt-1 ${['verified', 'accepted'].includes(profile.registrationStatus) ? 'text-emerald-700' : 'text-amber-700'}`}>
-                    {profile.registrationStatus === 'accepted' ? 'Diterima' : profile.registrationStatus === 'verified' ? 'Sudah Diverifikasi' : 'Menunggu Antrian'}
+                 <p className={`font-black text-xs uppercase mt-1 ${
+                   profile.registrationStatus === 'rejected' ? 'text-red-700' :
+                   ['verified', 'accepted'].includes(profile.registrationStatus) ? 'text-emerald-700' : 'text-amber-700'
+                 }`}>
+                    {profile.registrationStatus === 'accepted' ? 'Diterima' :
+                     profile.registrationStatus === 'verified' ? 'Sudah Diverifikasi' :
+                     profile.registrationStatus === 'rejected' ? 'Ditolak / Perbaikan' : 'Menunggu Antrian'}
                  </p>
               </div>
            </div>
@@ -568,6 +581,28 @@ const UserDashboard = ({ tab }) => {
                </button>
             </div>
           )
+        ) : profile?.registrationStatus === 'rejected' ? (
+          <div className="max-w-lg mx-auto py-8">
+             <div className="w-24 h-24 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-red-50">
+               <AlertCircle className="w-12 h-12" />
+             </div>
+             <h2 className="text-2xl font-black text-red-600 uppercase tracking-widest mb-3">Berkas Ditolak / Perlu Perbaikan</h2>
+             <p className="text-slate-500 text-sm leading-relaxed mb-6 font-medium">Panitia telah memeriksa berkas Anda dan menemukan kekurangan. Silakan perbaiki sesuai catatan berikut dan unggah ulang berkas yang diperlukan.</p>
+             {profile?.verificationMessage && (
+               <div className="bg-red-50 border-2 border-red-200 rounded-3xl p-6 text-left mb-6">
+                 <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-2">📋 Catatan dari Panitia:</p>
+                 <p className="text-red-800 font-bold text-sm leading-relaxed">{profile.verificationMessage}</p>
+               </div>
+             )}
+             <div className="flex flex-col gap-3">
+               <button onClick={() => setIsEditing(true)} className="w-full py-4 bg-red-600 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-95 flex justify-center items-center gap-3">
+                 <LayoutDashboard className="w-5 h-5" /> Perbaiki Data Pendaftaran
+               </button>
+               <a href="#/dashboard/documents" className="block w-full py-4 bg-white border-2 border-red-200 text-red-600 rounded-3xl font-black text-xs uppercase tracking-widest text-center hover:bg-red-50 transition-all active:scale-95">
+                 Upload Ulang Berkas
+               </a>
+             </div>
+          </div>
         ) : (
           <div className="max-w-md mx-auto py-12">
              <div className="w-24 h-24 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center mx-auto mb-8">
