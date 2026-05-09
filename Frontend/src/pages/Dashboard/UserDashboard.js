@@ -11,7 +11,7 @@ import { mapErrorMessage } from '../../utils/errorMapper';
 import PrintProof from '../../components/PrintProof';
 import RegistrationWizard from '../../components/RegistrationWizard';
 import DaftarUlangWizard from '../../components/DaftarUlangWizard';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const UserDashboard = ({ tab }) => {
   const { user } = useAuth();
@@ -27,6 +27,12 @@ const UserDashboard = ({ tab }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [uploadingDoc, setUploadingDoc] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+
+  const goToEdit = () => {
+    setIsEditing(true);
+    navigate('/dashboard/profile');
+  };
 
   const fetchProfile = async () => {
     try {
@@ -186,7 +192,7 @@ const UserDashboard = ({ tab }) => {
                     Lihat Detail
                  </button>
                  {!['verified', 'accepted'].includes(profile.registrationStatus) && (
-                   <button onClick={() => setIsEditing(true)} className="px-6 py-3.5 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl flex items-center gap-2">
+                   <button onClick={goToEdit} className="px-6 py-3.5 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl flex items-center gap-2">
                       <LayoutDashboard className="w-4 h-4" />
                       Edit Data
                    </button>
@@ -630,12 +636,9 @@ const UserDashboard = ({ tab }) => {
                </div>
              )}
              <div className="flex flex-col gap-3">
-               <button onClick={() => setIsEditing(true)} className="w-full py-4 bg-red-600 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-95 flex justify-center items-center gap-3">
-                 <LayoutDashboard className="w-5 h-5" /> Perbaiki Data Pendaftaran
+               <button onClick={goToEdit} className="w-full py-4 bg-red-600 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all active:scale-95 flex justify-center items-center gap-3">
+                 <LayoutDashboard className="w-5 h-5" /> Perbaiki & Upload Ulang Berkas
                </button>
-               <a href="#/dashboard/documents" className="block w-full py-4 bg-white border-2 border-red-200 text-red-600 rounded-3xl font-black text-xs uppercase tracking-widest text-center hover:bg-red-50 transition-all active:scale-95">
-                 Upload Ulang Berkas
-               </a>
              </div>
           </div>
         ) : (
