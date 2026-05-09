@@ -539,13 +539,23 @@ const UserDashboard = ({ tab }) => {
           </div>
         </div>
         <div className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 flex items-center gap-6">
-          <div className={`w-16 h-16 rounded-3xl flex items-center justify-center shadow-inner ${profile?.registrationStatus === 'accepted' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
-             <CheckCircle2 className="w-8 h-8" />
+          <div className={`w-16 h-16 rounded-3xl flex items-center justify-center shadow-inner ${
+            profile?.registrationStatus === 'accepted' ? 'bg-emerald-50 text-emerald-600' :
+            profile?.registrationStatus === 'not_accepted' ? 'bg-orange-50 text-orange-500' :
+            'bg-slate-50 text-slate-400'
+          }`}>
+             {profile?.registrationStatus === 'not_accepted' ? <X className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasil Seleksi</p>
-            <p className={`text-sm font-black mt-1 uppercase ${profile?.registrationStatus === 'accepted' ? 'text-emerald-600' : 'text-slate-900'}`}>
-              {profile?.registrationStatus === 'accepted' ? 'DITERIMA' : 'Belum Diumumkan'}
+            <p className={`text-sm font-black mt-1 uppercase ${
+              profile?.registrationStatus === 'accepted' ? 'text-emerald-600' :
+              profile?.registrationStatus === 'not_accepted' ? 'text-orange-600' :
+              'text-slate-900'
+            }`}>
+              {profile?.registrationStatus === 'accepted' ? 'DITERIMA' :
+               profile?.registrationStatus === 'not_accepted' ? 'TIDAK LOLOS' :
+               'Belum Diumumkan'}
             </p>
           </div>
         </div>
@@ -581,6 +591,31 @@ const UserDashboard = ({ tab }) => {
                </button>
             </div>
           )
+        ) : profile?.registrationStatus === 'not_accepted' ? (
+          <div className="max-w-lg mx-auto py-8">
+             <div className="w-24 h-24 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-orange-50">
+               <X className="w-12 h-12" />
+             </div>
+             <h2 className="text-2xl font-black text-orange-600 uppercase tracking-widest mb-3">Tidak Lolos Seleksi</h2>
+             <p className="text-slate-500 text-sm leading-relaxed mb-6 font-medium">
+               Kami mengucapkan terima kasih atas partisipasi Anda dalam PPDB MTsN 3 Sanggau.
+               Setelah melalui proses seleksi, kami mohon maaf menyampaikan bahwa Anda belum berhasil lolos pada tahun ini.
+             </p>
+             {profile?.verificationMessage && (
+               <div className="bg-orange-50 border-2 border-orange-200 rounded-3xl p-6 text-left mb-6">
+                 <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-2">📋 Keterangan dari Panitia:</p>
+                 <p className="text-orange-800 font-bold text-sm leading-relaxed">{profile.verificationMessage}</p>
+               </div>
+             )}
+             <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-left">
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Informasi:</p>
+               <ul className="space-y-2 text-slate-600 text-sm font-medium">
+                 <li>• Keputusan panitia bersifat final dan tidak dapat diganggu gugat</li>
+                 <li>• Silakan hubungi panitia jika ada pertanyaan lebih lanjut</li>
+                 <li>• Semangat! Masih ada kesempatan di sekolah lain yang lebih baik</li>
+               </ul>
+             </div>
+          </div>
         ) : profile?.registrationStatus === 'rejected' ? (
           <div className="max-w-lg mx-auto py-8">
              <div className="w-24 h-24 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-red-50">

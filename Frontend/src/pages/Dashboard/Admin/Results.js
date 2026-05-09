@@ -17,6 +17,8 @@ const Results = () => {
   const [openMenu, setOpenMenu] = useState(null);
   const [scoreModal, setScoreModal] = useState({ open: false, id: null, name: '', score: '' });
   const [savingScore, setSavingScore] = useState(false);
+  const [notAcceptedModal, setNotAcceptedModal] = useState({ open: false, id: null, name: '', message: '' });
+  const [savingNotAccepted, setSavingNotAccepted] = useState(false);
 
   // Detail Modal State
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -46,12 +48,33 @@ const Results = () => {
     }
   };
 
-  const updateStatus = async (id, status) => {
+  const updateStatus = async (id, status, message = null) => {
     try {
-      await API.post('/admin/update-status', { id, registrationStatus: status });
+      await API.post('/admin/update-status', { 
+        id, 
+        registrationStatus: status,
+        ...(message !== null && { verificationMessage: message })
+      });
       fetchApplicants();
     } catch (error) {
       alert('Gagal update status');
+    }
+  };
+
+  const handleConfirmNotAccepted = async () => {
+    setSavingNotAccepted(true);
+    try {
+      await API.post('/admin/update-status', {
+        id: notAcceptedModal.id,
+        registrationStatus: 'not_accepted',
+        verificationMessage: notAcceptedModal.message
+      });
+      setNotAcceptedModal({ open: false, id: null, name: '', message: '' });
+      fetchApplicants();
+    } catch (err) {
+      alert('Gagal simpan keputusan');
+    } finally {
+      setSavingNotAccepted(false);
     }
   };
 
@@ -467,7 +490,11 @@ const Results = () => {
                   <button onClick={() => updateStatus(app.id, 'accepted')} title="Terima" className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all">
                     <Check className="w-4 h-4" />
                   </button>
-                  <button onClick={() => updateStatus(app.id, 'not_accepted')} title="Tolak" className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all">
+                  <button
+                    onClick={() => setNotAcceptedModal({ open: true, id: app.id, name: app.name, message: '' })}
+                    title="Tidak Lolos"
+                    className="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition-all"
+                  >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -516,6 +543,60 @@ const Results = () => {
                   {savingScore ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                   SIMPAN NILAI
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Not Accepted Modal */}
+      <AnimatePresence>
+        {notAcceptedModal.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
+              <div className="bg-orange-500 p-4 text-white flex justify-between items-center">
+                <h3 className="font-bold uppercase flex items-center gap-2 text-sm">
+                  <X className="w-5 h-5" /> Konfirmasi: Tidak Lolos Seleksi
+                </h3>
+                <button onClick={() => setNotAcceptedModal({ open: false, id: null, name: '', message: '' })}><X className="w-6 h-6" /></button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
+                  <p className="text-[10px] text-orange-600 font-bold uppercase">Menyatakan TIDAK LOLOS:</p>
+                  <p className="text-sm font-black text-orange-900 uppercase">{notAcceptedModal.name}</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-700 uppercase tracking-wider">
+                    Keterangan / Alasan (opsional):
+                  </label>
+                  <textarea
+                    className="w-full h-28 p-4 text-sm bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-orange-500 focus:ring-0 transition-all outline-none resize-none"
+                    placeholder="Contoh: Nilai seleksi tidak mencapai batas minimum yang ditetapkan."
+                    value={notAcceptedModal.message}
+                    onChange={(e) => setNotAcceptedModal({ ...notAcceptedModal, message: e.target.value })}
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => setNotAcceptedModal({ open: false, id: null, name: '', message: '' })}
+                    className="flex-1 px-4 py-2.5 border-2 border-slate-200 rounded-xl text-xs font-black text-slate-500 hover:bg-slate-50 transition-all"
+                  >
+                    BATAL
+                  </button>
+                  <button
+                    onClick={handleConfirmNotAccepted}
+                    disabled={savingNotAccepted}
+                    className="flex-1 px-6 py-2.5 bg-orange-500 text-white rounded-xl text-xs font-black hover:bg-orange-600 disabled:opacity-50 shadow-lg shadow-orange-200 transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingNotAccepted ? <RefreshCw className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
+                    KONFIRMASI TIDAK LOLOS
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
