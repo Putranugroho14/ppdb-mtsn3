@@ -65,6 +65,7 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [hasExisting, setHasExisting] = useState(false);
   const [formData, setFormData] = useState({ ...EMPTY_FORM });
 
   useEffect(() => {
@@ -89,8 +90,10 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
       if (data.ibuNama) base.namaIbu = data.ibuNama;
       // Override with saved e-MIS data if exists
       if (data.DaftarUlang) {
+        setHasExisting(true);
         setFormData({ ...base, ...data.DaftarUlang });
       } else {
+        setHasExisting(false);
         setFormData(base);
       }
     } catch (err) {
@@ -141,8 +144,8 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2.5 rounded-xl"><ClipboardCheck className="w-6 h-6" /></div>
             <div>
-              <h2 className="text-base font-black">Input e-MIS: {applicant?.name}</h2>
-              <p className="text-blue-200 text-xs">No. {applicant?.registrationNumber}</p>
+              <h2 className="text-base font-black">{hasExisting ? 'Edit' : 'Input'} e-MIS: {applicant?.name}</h2>
+              <p className="text-blue-200 text-xs">{hasExisting ? 'Data sudah ada — perbarui jika perlu' : 'Isi formulir e-MIS untuk pendaftar ini'}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-xl transition-colors">
@@ -314,8 +317,12 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
                       <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto ring-8 ring-blue-50">
                         <ShieldCheck className="w-10 h-10" />
                       </div>
-                      <h3 className="text-xl font-black text-slate-900">Siap Disimpan</h3>
-                      <p className="text-slate-500 max-w-sm mx-auto text-sm">Pastikan data e-MIS untuk <strong>{applicant?.name}</strong> sudah benar sebelum menyimpan.</p>
+                      <h3 className="text-xl font-black text-slate-900">{hasExisting ? 'Siap Diperbarui' : 'Siap Disimpan'}</h3>
+                      <p className="text-slate-500 max-w-sm mx-auto text-sm">
+                        {hasExisting
+                          ? <>Data e-MIS <strong>{applicant?.name}</strong> akan <strong>diperbarui</strong>.</>  
+                          : <>Pastikan data e-MIS untuk <strong>{applicant?.name}</strong> sudah benar sebelum menyimpan.</>}
+                      </p>
                       {error && (
                         <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-2 text-red-600 text-sm">
                           <AlertCircle className="w-4 h-4 shrink-0" />

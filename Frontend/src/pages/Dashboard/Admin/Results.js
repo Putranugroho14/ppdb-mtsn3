@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApplicantDetailModal from '../../../components/ApplicantDetailModal';
+import AdminEmisModal from '../../../components/AdminEmisModal';
 
 const Results = () => {
   const [applicants, setApplicants] = useState([]);
@@ -23,6 +24,9 @@ const Results = () => {
   // Detail Modal State
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [detailApp, setDetailApp] = useState(null);
+  // e-MIS Modal State
+  const [isEmisOpen, setIsEmisOpen] = useState(false);
+  const [emisApp, setEmisApp] = useState(null);
 
   // Filtering State
   const [filterJalur, setFilterJalur] = useState('all');
@@ -387,6 +391,17 @@ const Results = () => {
                                 <UserCircle className="w-3.5 h-3.5" /> Lihat Data
                               </button>
                               <button
+                                onClick={() => {
+                                  setEmisApp(app);
+                                  setIsEmisOpen(true);
+                                  setOpenMenu(null);
+                                }}
+                                className="w-full px-4 py-2 text-left hover:bg-green-50 flex items-center gap-2 text-green-700 font-semibold"
+                              >
+                                <ClipboardCheck className="w-3.5 h-3.5 text-green-600" />
+                                {app.DaftarUlang?.id ? 'Edit e-MIS' : 'Input e-MIS'}
+                              </button>
+                              <button
                                 onClick={() => handleResetPassword(app.id)}
                                 className="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
                               >
@@ -602,6 +617,12 @@ const Results = () => {
           </div>
         )}
       </AnimatePresence>
+      <AdminEmisModal
+        isOpen={isEmisOpen}
+        onClose={() => { setIsEmisOpen(false); setEmisApp(null); }}
+        applicant={emisApp}
+        onRefresh={fetchApplicants}
+      />
     </div>
   );
 };
