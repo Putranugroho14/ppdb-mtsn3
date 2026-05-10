@@ -27,6 +27,7 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
     waliCalonSiswa: 'Ayah Kandung',
     parentName: '',
     ibuNama: '',
+    ibuPhone: '',
     waliNama: '',
     schoolOrigin: '',
     birthCertificateNumber: '',
@@ -57,6 +58,7 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
         waliCalonSiswa: initialData.waliCalonSiswa || parsedDetails.waliCalonSiswa || parsedDetails.hubWali || 'Ayah Kandung',
         parentName: initialData.parentName || parsedDetails.parentName || parsedDetails.namaAyah || '',
         ibuNama: initialData.ibuNama || parsedDetails.ibuNama || parsedDetails.namaIbu || '',
+        ibuPhone: initialData.ibuPhone || parsedDetails.ibuPhone || parsedDetails.hpIbu || '',
         waliNama: initialData.waliNama || parsedDetails.waliNama || parsedDetails.namaWali || '',
         schoolOrigin: initialData.schoolOrigin || parsedDetails.schoolOrigin || '',
         birthCertificateNumber: initialData.birthCertificateNumber || parsedDetails.birthCertificateNumber || '',
@@ -273,6 +275,7 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
                   <div className="space-y-4">
                     <InputGroup label="Nama Ayah" name="parentName" value={formData.parentName} onChange={handleInputChange} error={fieldErrors.parentName} />
                     <InputGroup label="Nama Ibu" name="ibuNama" value={formData.ibuNama} onChange={handleInputChange} error={fieldErrors.ibuNama} />
+                    <InputGroup label="HP/WA Ibu" name="ibuPhone" value={formData.ibuPhone} onChange={handleInputChange} placeholder="08..." />
                     <InputGroup label="Nama Wali" name="waliNama" value={formData.waliNama} onChange={handleInputChange} />
                   </div>
                 </div>

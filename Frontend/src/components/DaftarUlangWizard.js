@@ -121,9 +121,15 @@ const DaftarUlangWizard = ({ pendaftarId, onComplete }) => {
         if (data.ibuNama) newData.namaIbu = data.ibuNama;
         if (data.ibuPhone) newData.hpIbu = data.ibuPhone; // Nomor HP Ibu
 
-        // If e-MIS data already exists, merge it
+        // If e-MIS data already exists, merge it but fallback to profile data for empty fields
         if (data.DaftarUlang) {
-          return { ...newData, ...data.DaftarUlang };
+          const merged = { ...newData };
+          Object.keys(newData).forEach(key => {
+            if (data.DaftarUlang[key] !== null && data.DaftarUlang[key] !== undefined && data.DaftarUlang[key] !== '') {
+              merged[key] = data.DaftarUlang[key];
+            }
+          });
+          return merged;
         }
         return newData;
       });

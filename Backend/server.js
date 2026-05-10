@@ -50,8 +50,8 @@ app.get('/', (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
-    await sequelize.sync();
-    console.log('✅ Database models synced');
+    await sequelize.sync({ alter: true });
+    console.log('✅ Database models synced (alter: true)');
 
     const PORT = process.env.PORT || 5000;
     const server = app.listen(PORT, () => {
@@ -81,7 +81,7 @@ if (process.env.VERCEL !== '1') {
   startServer();
 } else {
   // For Vercel Serverless
-  connectDB().then(() => sequelize.sync()).catch(console.error);
+  connectDB().then(() => sequelize.sync({ alter: true })).catch(console.error);
 }
 
 // Global error handler for Multer/Cloudinary or other unhandled errors

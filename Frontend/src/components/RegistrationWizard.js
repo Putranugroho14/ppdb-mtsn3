@@ -208,6 +208,7 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
           parentPhone: initialData.parentPhone || parsedDetails.parentPhone || '',
           ibuNama: initialData.ibuNama || parsedDetails.ibuNama || '',
           ibuNik: initialData.ibuNik || parsedDetails.ibuNik || '',
+          ibuPhone: initialData.ibuPhone || parsedDetails.ibuPhone || '',
           ayahNik: initialData.ayahNik || parsedDetails.ayahNik || '',
           noKK: initialData.noKK || parsedDetails.noKK || '',
           namaKepalaKeluarga: initialData.namaKepalaKeluarga || parsedDetails.namaKepalaKeluarga || '',

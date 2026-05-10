@@ -139,10 +139,17 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
         hpWali:          parsedDetails.hpWali          || '',
       };
 
-      // If e-MIS data already saved → override base with saved values (saved takes priority)
+      // If e-MIS data already saved → merge but fallback to base profile for empty fields
       if (data.DaftarUlang) {
         setHasExisting(true);
-        setFormData({ ...base, ...data.DaftarUlang });
+        const merged = { ...base };
+        // Priority: Saved DaftarUlang > Base Profile (base) > Empty
+        Object.keys(base).forEach(key => {
+          if (data.DaftarUlang[key] !== null && data.DaftarUlang[key] !== undefined && data.DaftarUlang[key] !== '') {
+            merged[key] = data.DaftarUlang[key];
+          }
+        });
+        setFormData(merged);
       } else {
         setHasExisting(false);
         setFormData(base);
