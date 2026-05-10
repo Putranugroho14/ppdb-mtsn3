@@ -16,11 +16,11 @@ app.use(cors({
     'http://localhost:3001', 
     'https://ppdb-mtsn3-web.vercel.app',
     'https://ppdb-mtsn3.vercel.app',
-    process.env.CLIENT_URL
-  ].filter(Boolean),
+    /\.vercel\.app$/ // Allow all vercel subdomains
+  ],
   credentials: true,
-  optionsSuccessStatus: 200,  // Some browsers (IE11) choke on 204
-  maxAge: 0                   // Don't let browsers cache preflight results
+  optionsSuccessStatus: 200,
+  maxAge: 86400 // Cache preflight for 24 hours
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

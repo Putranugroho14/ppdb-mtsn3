@@ -35,6 +35,9 @@ const Results = () => {
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  
+  // Tab State: 'accepted' or 'pending'
+  const [activeTab, setActiveTab] = useState('accepted');
 
   useEffect(() => {
     fetchApplicants();
@@ -184,7 +187,10 @@ const Results = () => {
     const matchesJalur = filterJalur === 'all' || app.jalurPendaftaran === filterJalur;
     const matchesGender = filterGender === 'all' || app.gender === filterGender;
 
-    return matchesSearch && matchesJalur && matchesGender && app.registrationStatus === 'accepted';
+    // Filter by the active tab status
+    const targetStatus = activeTab === 'accepted' ? 'accepted' : 'verified';
+    
+    return matchesSearch && matchesJalur && matchesGender && app.registrationStatus === targetStatus;
   });
 
   // Pagination Logic
@@ -202,8 +208,26 @@ const Results = () => {
             <CheckCircle2 className="w-8 h-8 text-emerald-500" />
             Lolos <span className="text-primary-600">Seleksi</span>
           </h1>
-          <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Daftar calon siswa yang dinyatakan lulus seleksi administrasi dan tes.</p>
+          <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Kelola keputusan akhir dan data pendaftaran ulang siswa.</p>
         </div>
+      </div>
+
+      {/* Tabs Selector */}
+      <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit">
+        <button
+          onClick={() => { setActiveTab('accepted'); setCurrentPage(1); }}
+          className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'accepted' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50'}`}
+        >
+          <CheckCircle2 className={`w-4 h-4 ${activeTab === 'accepted' ? 'text-blue-500' : 'text-slate-400'}`} />
+          Sudah Lolos ({applicants.filter(a => a.registrationStatus === 'accepted').length})
+        </button>
+        <button
+          onClick={() => { setActiveTab('pending'); setCurrentPage(1); }}
+          className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'pending' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50'}`}
+        >
+          <Clock className={`w-4 h-4 ${activeTab === 'pending' ? 'text-amber-500' : 'text-slate-400'}`} />
+          Menunggu Keputusan ({applicants.filter(a => a.registrationStatus === 'verified').length})
+        </button>
       </div>
 
       {/* Filters Bar */}
@@ -259,8 +283,10 @@ const Results = () => {
         className="bg-white shadow-xl rounded-xl border border-slate-200"
       >
         {/* Blue Header Section */}
-        <div className="bg-[#007BFF] p-4 flex flex-col sm:flex-row justify-between items-center text-white gap-3">
-          <h2 className="font-black text-sm uppercase tracking-wider">PPDB Lolos Seleksi</h2>
+        <div className={`p-4 flex flex-col sm:flex-row justify-between items-center text-white gap-3 transition-colors ${activeTab === 'accepted' ? 'bg-[#007BFF]' : 'bg-amber-500'}`}>
+          <h2 className="font-black text-sm uppercase tracking-wider">
+            {activeTab === 'accepted' ? 'PPDB Lolos Seleksi' : 'Pendaftar Menunggu Keputusan'}
+          </h2>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -281,30 +307,41 @@ const Results = () => {
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left text-[11px] sm:text-xs border-collapse">
             <thead>
-              <tr className="bg-[#5BC0DE] text-white">
+              <tr className={`${activeTab === 'accepted' ? 'bg-[#5BC0DE]' : 'bg-amber-400'} text-white transition-colors`}>
                 <th className="p-2 border border-slate-200 font-bold text-center w-8">NO</th>
                 <th className="p-2 border border-slate-200 font-bold">NOMOR</th>
                 <th className="p-2 border border-slate-200 font-bold">NISN</th>
                 <th className="p-2 border border-slate-200 font-bold">NAMA LENGKAP</th>
                 <th className="p-2 border border-slate-200 font-bold text-center w-8">L/P</th>
                 <th className="p-2 border border-slate-200 font-bold">TEMPAT, TGL LAHIR</th>
-                <th className="p-2 border border-slate-200 font-bold">ASAL SEKOLAH</th>
-                <th className="p-2 border border-slate-200 font-bold text-center">E-MIS</th>
-                <th className="p-2 border border-slate-200 font-bold text-center">REGR.</th>
+                {activeTab === 'accepted' ? (
+                  <>
+                    <th className="p-2 border border-slate-200 font-bold">ASAL SEKOLAH</th>
+                    <th className="p-2 border border-slate-200 font-bold text-center">E-MIS</th>
+                    <th className="p-2 border border-slate-200 font-bold text-center">REGR.</th>
+                  </>
+                ) : (
+                  <>
+                    <th className="p-2 border border-slate-200 font-bold text-center">NILAI TES</th>
+                    <th className="p-2 border border-slate-200 font-bold text-center">KEPUTUSAN AKHIR</th>
+                  </>
+                )}
                 <th className="p-2 border border-slate-200 font-bold text-center">MENU</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="10" className="p-10 text-center">
+                  <td colSpan="11" className="p-10 text-center">
                     <RefreshCw className="w-8 h-8 animate-spin mx-auto text-primary-600 mb-2" />
                     <p className="text-slate-400 font-medium">Memuat data...</p>
                   </td>
                 </tr>
               ) : filteredApplicants.length === 0 ? (
                 <tr>
-                  <td colSpan="10" className="p-10 text-center text-slate-400 italic">Tidak ada pendaftar yang lolos seleksi.</td>
+                  <td colSpan="11" className="p-10 text-center text-slate-400 italic">
+                    {activeTab === 'accepted' ? 'Tidak ada pendaftar yang lolos seleksi.' : 'Tidak ada pendaftar yang menunggu keputusan.'}
+                  </td>
                 </tr>
               ) : (
                 currentRows.map((app, index) => (
@@ -317,31 +354,65 @@ const Results = () => {
                     <td className="p-2 border border-slate-200 text-slate-600 uppercase">
                       {app.birthPlace}, {app.birthDate}
                     </td>
-                    <td className="p-2 border border-slate-200 text-slate-600 uppercase">
-                      {app.schoolOrigin || app.sekolahAsalLainnya || '-'}
-                    </td>
-                    <td className="p-2 border border-slate-200 text-center">
-                      {app.DaftarUlang?.id ? (
-                        <span className="text-green-600 bg-green-100 p-1 rounded-full inline-block" title="Sudah isi e-MIS">
-                          <Check className="w-3 h-3" />
-                        </span>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-                    <td className="p-2 border border-slate-200 text-center">
-                      {(app.DaftarUlang?.statusDaftarUlang === 'completed' || app.DaftarUlang?.statusDaftarUlang === 'verified') ? (
-                        <span className="text-green-600 bg-green-100 p-1 rounded-full inline-block" title="Selesai Daftar Ulang">
-                          <Check className="w-3 h-3" />
-                        </span>
-                      ) : app.DaftarUlang?.id ? (
-                        <span className="text-amber-500 bg-amber-50 p-1 rounded-full inline-block" title="Sedang Mengisi (Pending)">
-                          <Clock className="w-3 h-3" />
-                        </span>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
+                    
+                    {activeTab === 'accepted' ? (
+                      <>
+                        <td className="p-2 border border-slate-200 text-slate-600 uppercase">
+                          {app.schoolOrigin || app.sekolahAsalLainnya || '-'}
+                        </td>
+                        <td className="p-2 border border-slate-200 text-center">
+                          {app.DaftarUlang?.id ? (
+                            <span className="text-green-600 bg-green-100 p-1 rounded-full inline-block" title="Sudah isi e-MIS">
+                              <Check className="w-3 h-3" />
+                            </span>
+                          ) : (
+                            <span className="text-slate-300">—</span>
+                          )}
+                        </td>
+                        <td className="p-2 border border-slate-200 text-center">
+                          {(app.DaftarUlang?.statusDaftarUlang === 'completed' || app.DaftarUlang?.statusDaftarUlang === 'verified') ? (
+                            <span className="text-green-600 bg-green-100 p-1 rounded-full inline-block" title="Selesai Daftar Ulang">
+                              <Check className="w-3 h-3" />
+                            </span>
+                          ) : app.DaftarUlang?.id ? (
+                            <span className="text-amber-500 bg-amber-50 p-1 rounded-full inline-block" title="Sedang Mengisi (Pending)">
+                              <Clock className="w-3 h-3" />
+                            </span>
+                          ) : (
+                            <span className="text-slate-300">—</span>
+                          )}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="p-2 border border-slate-200 text-center">
+                          <button
+                            onClick={() => setScoreModal({ open: true, id: app.id, name: app.name, score: app.HasilSeleksi?.averageScore || '' })}
+                            className="px-2 py-1 bg-amber-50 text-amber-700 rounded border border-amber-200 font-bold hover:bg-amber-500 hover:text-white transition-all"
+                          >
+                            {app.HasilSeleksi?.averageScore || 'Input Nilai'}
+                          </button>
+                        </td>
+                        <td className="p-2 border border-slate-200 text-center">
+                          <div className="flex justify-center gap-1">
+                             <button 
+                                onClick={() => updateStatus(app.id, 'accepted')} 
+                                className="p-1.5 bg-green-500 text-white rounded hover:bg-green-600 shadow-sm"
+                                title="Loloskan"
+                             >
+                               <Check className="w-3.5 h-3.5" />
+                             </button>
+                             <button 
+                                onClick={() => setNotAcceptedModal({ open: true, id: app.id, name: app.name, message: '' })} 
+                                className="p-1.5 bg-orange-500 text-white rounded hover:bg-orange-600 shadow-sm"
+                                title="Tidak Lolos"
+                             >
+                               <X className="w-3.5 h-3.5" />
+                             </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
                     <td className="p-2 border border-slate-200 text-center relative">
                       <button
                         onClick={() => setOpenMenu(openMenu === app.id ? null : app.id)}
@@ -453,7 +524,7 @@ const Results = () => {
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
                   className={`w-8 h-8 rounded-lg font-bold text-[10px] transition-all shadow-sm ${currentPage === i + 1
-                    ? 'bg-[#007BFF] text-white shadow-blue-200'
+                    ? (activeTab === 'accepted' ? 'bg-[#007BFF] text-white shadow-blue-200' : 'bg-amber-500 text-white shadow-amber-200')
                     : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                     }`}
                 >
@@ -472,52 +543,7 @@ const Results = () => {
         </div>
       </motion.div>
 
-      {/* Decision Section for Verified only */}
-      <div className="mt-8">
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-amber-500" /> Pendaftar Menunggu Keputusan
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {applicants.filter(a => a.registrationStatus === 'verified').length === 0 ? (
-            <div className="col-span-full p-8 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
-              Tidak ada pendaftar yang menunggu keputusan final.
-            </div>
-          ) : (
-            applicants.filter(a => a.registrationStatus === 'verified').map(app => (
-              <div key={app.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center hover:border-blue-300 transition-all group">
-                <div>
-                  <p className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{app.name}</p>
-                  <p className="text-[10px] text-slate-500 font-mono">{app.registrationNumber}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setScoreModal({
-                      open: true,
-                      id: app.id,
-                      name: app.name,
-                      score: app.HasilSeleksi?.selectionScore || ''
-                    })}
-                    title="Input Nilai"
-                    className="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-500 hover:text-white transition-all"
-                  >
-                    <Trophy className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => updateStatus(app.id, 'accepted')} title="Terima" className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all">
-                    <Check className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setNotAcceptedModal({ open: true, id: app.id, name: app.name, message: '' })}
-                    title="Tidak Lolos"
-                    className="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition-all"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+      {/* Decision Section Removed - Integrated into Tabs Above */}
 
       {/* Score Modal */}
       <AnimatePresence>
