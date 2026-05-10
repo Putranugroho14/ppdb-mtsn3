@@ -21,12 +21,13 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
     birthDate: '',
     gender: 'L',
     address: '',
-    nikAyah: '',
-    nikIbu: '',
-    hubWali: 'Ayah Kandung',
-    namaAyah: '',
-    namaIbu: '',
-    namaWali: '',
+    // DB column names (match RegistrationWizard & Pendaftar model)
+    ayahNik: '',
+    ibuNik: '',
+    waliCalonSiswa: 'Ayah Kandung',
+    parentName: '',
+    ibuNama: '',
+    waliNama: '',
     schoolOrigin: '',
     birthCertificateNumber: '',
     jalurPendaftaran: '',
@@ -50,29 +51,27 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
         birthDate: initialData.birthDate ? initialData.birthDate.substring(0, 10) : '',
         gender: initialData.gender || 'L',
         address: initialData.address || '',
-        // Field names from AddApplicantWizard style: nikAyah, namaAyah, nikIbu, namaIbu, hubWali, namaWali
-        // Field names from RegistrationWizard style (students): ayahNik, parentName, ibuNik, ibuNama, waliCalonSiswa, waliNama
-        nikAyah: parsedDetails.nikAyah || initialData.nikAyah || parsedDetails.ayahNik || '',
-        nikIbu: parsedDetails.nikIbu || initialData.nikIbu || parsedDetails.ibuNik || '',
-        hubWali: parsedDetails.hubWali || initialData.hubWali || parsedDetails.waliCalonSiswa || 'Ayah Kandung',
-        namaAyah: parsedDetails.namaAyah || initialData.namaAyah || parsedDetails.parentName || '',
-        namaIbu: parsedDetails.namaIbu || initialData.namaIbu || parsedDetails.ibuNama || '',
-        namaWali: parsedDetails.namaWali || initialData.namaWali || parsedDetails.waliNama || '',
+        // Use exact DB column names - these are stored directly as columns, not in details JSON
+        ayahNik: initialData.ayahNik || parsedDetails.ayahNik || parsedDetails.nikAyah || '',
+        ibuNik: initialData.ibuNik || parsedDetails.ibuNik || parsedDetails.nikIbu || '',
+        waliCalonSiswa: initialData.waliCalonSiswa || parsedDetails.waliCalonSiswa || parsedDetails.hubWali || 'Ayah Kandung',
+        parentName: initialData.parentName || parsedDetails.parentName || parsedDetails.namaAyah || '',
+        ibuNama: initialData.ibuNama || parsedDetails.ibuNama || parsedDetails.namaIbu || '',
+        waliNama: initialData.waliNama || parsedDetails.waliNama || parsedDetails.namaWali || '',
         schoolOrigin: initialData.schoolOrigin || parsedDetails.schoolOrigin || '',
-        birthCertificateNumber: parsedDetails.birthCertificateNumber || initialData.birthCertificateNumber || '',
+        birthCertificateNumber: initialData.birthCertificateNumber || parsedDetails.birthCertificateNumber || '',
         jalurPendaftaran: initialData.jalurPendaftaran || parsedDetails.jalurPendaftaran || '',
-        graduationYear: parsedDetails.graduationYear || initialData.graduationYear || '',
+        graduationYear: initialData.graduationYear || parsedDetails.graduationYear || '',
         agama: initialData.agama || parsedDetails.agama || '',
-        parentPhone: parsedDetails.parentPhone || initialData.parentPhone || '',
+        parentPhone: initialData.parentPhone || parsedDetails.parentPhone || '',
         phone: initialData.phone || '',
       });
       setStep(1);
     } else {
-      // Reset form for add mode
       setFormData({
         name: '', nik: '', nisn: '', birthPlace: '', birthDate: '',
-        gender: 'L', address: '', nikAyah: '', nikIbu: '',
-        hubWali: 'Ayah Kandung', namaAyah: '', namaIbu: '', namaWali: '',
+        gender: 'L', address: '', ayahNik: '', ibuNik: '',
+        waliCalonSiswa: 'Ayah Kandung', parentName: '', ibuNama: '', waliNama: '',
         schoolOrigin: '', birthCertificateNumber: '', jalurPendaftaran: '',
         graduationYear: '', agama: '', parentPhone: '', phone: ''
       });
@@ -111,8 +110,8 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
       if (!formData.birthDate) errors.birthDate = 'Tanggal lahir wajib diisi.';
     }
     if (s === 2) {
-      if (!formData.nikAyah && !formData.nikIbu) errors.nikAyah = 'Minimal salah satu NIK orang tua wajib diisi.';
-      if (!formData.namaAyah && !formData.namaIbu) errors.namaAyah = 'Minimal salah satu nama orang tua wajib diisi.';
+      if (!formData.ayahNik && !formData.ibuNik) errors.ayahNik = 'Minimal salah satu NIK orang tua wajib diisi.';
+      if (!formData.parentName && !formData.ibuNama) errors.parentName = 'Minimal salah satu nama orang tua wajib diisi.';
     }
     if (s === 3) {
       if (!formData.schoolOrigin) errors.schoolOrigin = 'Sekolah asal wajib diisi.';
@@ -255,13 +254,13 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
               {step === 2 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <div className="space-y-4">
-                    <InputGroup label="NIK Ayah" name="nikAyah" value={formData.nikAyah} onChange={handleInputChange} error={fieldErrors.nikAyah} />
-                    <InputGroup label="NIK Ibu" name="nikIbu" value={formData.nikIbu} onChange={handleInputChange} error={fieldErrors.nikIbu} />
+                    <InputGroup label="NIK Ayah" name="ayahNik" value={formData.ayahNik} onChange={handleInputChange} error={fieldErrors.ayahNik} />
+                    <InputGroup label="NIK Ibu" name="ibuNik" value={formData.ibuNik} onChange={handleInputChange} error={fieldErrors.ibuNik} />
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Wali Calon Siswa</label>
                       <select
-                        name="hubWali"
-                        value={formData.hubWali}
+                        name="waliCalonSiswa"
+                        value={formData.waliCalonSiswa}
                         onChange={handleInputChange}
                         className="w-full mt-1 p-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-slate-700"
                       >
@@ -272,9 +271,9 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <InputGroup label="Nama Ayah" name="namaAyah" value={formData.namaAyah} onChange={handleInputChange} error={fieldErrors.namaAyah} />
-                    <InputGroup label="Nama Ibu" name="namaIbu" value={formData.namaIbu} onChange={handleInputChange} error={fieldErrors.namaIbu} />
-                    <InputGroup label="Nama Wali" name="namaWali" value={formData.namaWali} onChange={handleInputChange} />
+                    <InputGroup label="Nama Ayah" name="parentName" value={formData.parentName} onChange={handleInputChange} error={fieldErrors.parentName} />
+                    <InputGroup label="Nama Ibu" name="ibuNama" value={formData.ibuNama} onChange={handleInputChange} error={fieldErrors.ibuNama} />
+                    <InputGroup label="Nama Wali" name="waliNama" value={formData.waliNama} onChange={handleInputChange} />
                   </div>
                 </div>
               )}
