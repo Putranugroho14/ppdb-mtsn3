@@ -13,6 +13,7 @@ const {
   verifyEmis
 } = require('../controllers/adminController');
 const { generateBuktiPendaftaran, generateBuktiDaftarUlang, generateKartuPeserta } = require('../controllers/pdfController');
+const { submitDaftarUlangByAdmin, getDaftarUlangByAdmin } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.use(protect);
@@ -31,5 +32,7 @@ router.put('/applicant/:id', updateApplicant);
 router.get('/print-bukti-v3/:id', generateBuktiPendaftaran);
 router.get('/print-form-emis/:id', generateBuktiDaftarUlang);
 router.get('/print-kartu-peserta/:id', generateKartuPeserta);
+router.get('/emis-data/:id', getDaftarUlangByAdmin);
+router.post('/emis-data/:id', submitDaftarUlangByAdmin);
 
 module.exports = router;

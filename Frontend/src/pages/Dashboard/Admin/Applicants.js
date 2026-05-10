@@ -7,12 +7,13 @@ import {
   MoreVertical, FileText, Star, Heart, 
   Trash2, Edit, MessageCircle, Lock, 
   Printer, UserCircle, ChevronLeft, ChevronRight, X, CreditCard,
-  Download, Clock, Plus
+  Download, Clock, Plus, ClipboardCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import AddApplicantWizard from './AddApplicantWizard';
 import ApplicantDetailModal from '../../../components/ApplicantDetailModal';
+import AdminEmisModal from '../../../components/AdminEmisModal';
 import { Filter, ChevronDown } from 'lucide-react';
 
 const Applicants = () => {
@@ -37,6 +38,8 @@ const Applicants = () => {
   const [error, setError] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [deleteConfig, setDeleteConfig] = useState({ show: false, id: null, name: '' });
+  const [isEmisOpen, setIsEmisOpen] = useState(false);
+  const [emisApp, setEmisApp] = useState(null);
 
   useEffect(() => {
     fetchApplicants();
@@ -239,6 +242,13 @@ const Applicants = () => {
         onClose={() => { setIsAddOpen(false); setSelectedApp(null); }} 
         onRefresh={fetchApplicants}
         initialData={selectedApp}
+      />
+
+      <AdminEmisModal
+        isOpen={isEmisOpen}
+        onClose={() => { setIsEmisOpen(false); setEmisApp(null); }}
+        applicant={emisApp}
+        onRefresh={fetchApplicants}
       />
 
       <ApplicantDetailModal 
@@ -458,6 +468,16 @@ const Applicants = () => {
                                 className="w-full px-4 py-2 hover:bg-slate-50 flex items-center gap-2 text-slate-700"
                               >
                                 <Edit className="w-3.5 h-3.5 text-amber-500" /> Edit Data
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEmisApp(app);
+                                  setIsEmisOpen(true);
+                                  setOpenMenu(null);
+                                }}
+                                className="w-full px-4 py-2 hover:bg-green-50 flex items-center gap-2 text-green-700 font-semibold"
+                              >
+                                <ClipboardCheck className="w-3.5 h-3.5 text-green-600" /> Input e-MIS
                               </button>
                               <button onClick={() => handlePrint(app.id)} className="w-full px-4 py-2 hover:bg-slate-50 flex items-center gap-2 text-slate-700">
                                 <Printer className="w-3.5 h-3.5 text-slate-500" /> Cetak Bukti

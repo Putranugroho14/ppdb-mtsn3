@@ -181,4 +181,38 @@ const submitDaftarUlang = async (req, res) => {
   }
 };
 
-module.exports = { getProfile, createOrUpdateProfile, uploadDocument, submitDaftarUlang };
+const submitDaftarUlangByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // pendaftarId from URL
+    const applicant = await Pendaftar.findByPk(id, { include: [DaftarUlang] });
+    if (!applicant) return res.status(404).json({ message: 'Pendaftar tidak ditemukan' });
+    
+    let du = await DaftarUlang.findOne({ where: { pendaftarId: id } });
+    
+    const payload = { ...req.body, pendaftarId: id, statusDaftarUlang: 'completed' };
+    
+    if (du) {
+      await du.update(payload);
+    } else {
+      du = await DaftarUlang.create(payload);
+    }
+    
+    res.json({ message: 'Data e-MIS berhasil disimpan oleh admin', data: du });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Also expose a GET to fetch a specific applicant's daftar ulang data for admin pre-fill
+const getDaftarUlangByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const applicant = await Pendaftar.findByPk(id, { include: [Berkas, DaftarUlang] });
+    if (!applicant) return res.status(404).json({ message: 'Pendaftar tidak ditemukan' });
+    res.json(applicant);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getProfile, createOrUpdateProfile, uploadDocument, submitDaftarUlang, submitDaftarUlangByAdmin, getDaftarUlangByAdmin };
