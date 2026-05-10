@@ -81,14 +81,64 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
     setFetching(true);
     try {
       const { data } = await API.get(`/admin/emis-data/${applicant.id}`);
-      const base = { ...EMPTY_FORM };
-      // Pre-fill from pendaftar profile
-      if (data.ayahNik) base.nikAyah = data.ayahNik;
-      if (data.parentName) base.namaAyah = data.parentName;
-      if (data.parentPhone) base.hpAyah = data.parentPhone;
-      if (data.ibuNik) base.nikIbu = data.ibuNik;
-      if (data.ibuNama) base.namaIbu = data.ibuNama;
-      // Override with saved e-MIS data if exists
+      
+      // Parse details JSON from main profile (RegistrationWizard saves extra data here)
+      let parsedDetails = {};
+      try { if (data.details) parsedDetails = JSON.parse(data.details); } catch(e) {}
+
+      // Build base pre-fill from main profile data
+      const base = {
+        ...EMPTY_FORM,
+        // --- Orang Tua Ayah ---
+        nikAyah:    data.ayahNik    || parsedDetails.ayahNik    || '',
+        namaAyah:   data.parentName || parsedDetails.parentName || '',
+        hpAyah:     data.parentPhone || parsedDetails.parentPhone || '',
+        // --- Orang Tua Ibu ---
+        nikIbu:     data.ibuNik  || parsedDetails.ibuNik  || '',
+        namaIbu:    data.ibuNama || parsedDetails.ibuNama || '',
+        // --- Wali ---
+        namaWali:   data.waliNama || parsedDetails.waliNama || '',
+        // --- Alamat Sekolah Asal (nama sekolah sebagai petunjuk) ---
+        alamatSekolahAsal: parsedDetails.alamatSekolahAsal || '',
+        // --- Info tambahan yang mungkin sudah diisi di profil ---
+        hobi:     parsedDetails.hobi     || '',
+        citaCita: parsedDetails.citaCita || '',
+        noKIP:    parsedDetails.noKIP    || data.noKIP    || '',
+        noKKS:    parsedDetails.noKKS    || data.noKKS    || '',
+        noPKH:    parsedDetails.noPKH    || data.noPKH    || '',
+        anakKe:       parsedDetails.anakKe       || 1,
+        jumlahSaudara: parsedDetails.jumlahSaudara || 0,
+        disabilitas:   parsedDetails.disabilitas  || 'TIDAK ADA',
+        imunisasi:     parsedDetails.imunisasi    || 'LENGKAP',
+        praSekolah:    parsedDetails.praSekolah   || 'TIDAK PERNAH',
+        transportasiKeSekolah: parsedDetails.transportasiKeSekolah || 'JALAN KAKI',
+        statusTempatTinggal:   parsedDetails.statusTempatTinggal   || 'TINGGAL DENGAN ORANG TUA',
+        estimasiJarak: parsedDetails.estimasiJarak || '',
+        estimasiWaktu: parsedDetails.estimasiWaktu || '',
+        lat: parsedDetails.lat || '',
+        lng: parsedDetails.lng || '',
+        yangMembiayai: parsedDetails.yangMembiayai || 'ORANG TUA',
+        keberadaanAyah:  parsedDetails.keberadaanAyah  || 'MASIH ADA',
+        tempatLahirAyah: parsedDetails.tempatLahirAyah || '',
+        tglLahirAyah:    parsedDetails.tglLahirAyah    || '',
+        pendidikanAyah:  parsedDetails.pendidikanAyah  || 'SMA/SEDERAJAT',
+        pekerjaanAyah:   parsedDetails.pekerjaanAyah   || 'WIRASWASTA',
+        penghasilanAyah: parsedDetails.penghasilanAyah || '1.000.000 - 2.000.000',
+        keberadaanIbu:   parsedDetails.keberadaanIbu   || 'MASIH ADA',
+        tempatLahirIbu:  parsedDetails.tempatLahirIbu  || '',
+        tglLahirIbu:     parsedDetails.tglLahirIbu     || '',
+        pendidikanIbu:   parsedDetails.pendidikanIbu   || 'SMA/SEDERAJAT',
+        pekerjaanIbu:    parsedDetails.pekerjaanIbu    || 'URUSAN RUMAH TANGGA',
+        penghasilanIbu:  parsedDetails.penghasilanIbu  || 'TIDAK ADA',
+        hpIbu:           parsedDetails.hpIbu           || '',
+        nikWali:         parsedDetails.nikWali         || '',
+        pendidikanWali:  parsedDetails.pendidikanWali  || '',
+        pekerjaanWali:   parsedDetails.pekerjaanWali   || '',
+        penghasilanWali: parsedDetails.penghasilanWali || '',
+        hpWali:          parsedDetails.hpWali          || '',
+      };
+
+      // If e-MIS data already saved → override base with saved values (saved takes priority)
       if (data.DaftarUlang) {
         setHasExisting(true);
         setFormData({ ...base, ...data.DaftarUlang });
