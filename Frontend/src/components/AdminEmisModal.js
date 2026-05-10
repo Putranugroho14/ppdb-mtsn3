@@ -55,7 +55,7 @@ const EMPTY_FORM = {
   tempatLahirIbu: '', tglLahirIbu: '',
   pendidikanIbu: 'SMA/SEDERAJAT', pekerjaanIbu: 'URUSAN RUMAH TANGGA',
   penghasilanIbu: 'TIDAK ADA', hpIbu: '',
-  nikWali: '', namaWali: '', pendidikanWali: '',
+  waliType: '', nikWali: '', namaWali: '', pendidikanWali: '',
   pekerjaanWali: '', penghasilanWali: '', hpWali: ''
 };
 
@@ -156,6 +156,34 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Ketika pilih Wali = Ayah/Ibu Kandung → salin data ke field wali
+  const handleWaliTypeChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => {
+      const updates = { waliType: value };
+      if (value === 'Ayah Kandung') {
+        updates.nikWali         = prev.nikAyah;
+        updates.namaWali        = prev.namaAyah;
+        updates.pendidikanWali  = prev.pendidikanAyah;
+        updates.pekerjaanWali   = prev.pekerjaanAyah;
+        updates.penghasilanWali = prev.penghasilanAyah;
+        updates.hpWali          = prev.hpAyah;
+      } else if (value === 'Ibu Kandung') {
+        updates.nikWali         = prev.nikIbu;
+        updates.namaWali        = prev.namaIbu;
+        updates.pendidikanWali  = prev.pendidikanIbu;
+        updates.pekerjaanWali   = prev.pekerjaanIbu;
+        updates.penghasilanWali = prev.penghasilanIbu;
+        updates.hpWali          = prev.hpIbu;
+      } else {
+        updates.nikWali = ''; updates.namaWali = '';
+        updates.pendidikanWali = ''; updates.pekerjaanWali = '';
+        updates.penghasilanWali = ''; updates.hpWali = '';
+      }
+      return { ...prev, ...updates };
+    });
   };
 
   const handleSubmit = async () => {
@@ -347,6 +375,37 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
                         { value: 'PETANI', label: 'Petani' }, { value: 'LAINNYA', label: 'Lainnya' }
                       ]} />
                       <Input label="HP/WA Ibu" name="hpIbu" value={formData.hpIbu} onChange={handleChange} placeholder="08..." />
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 mt-2">
+                    <h4 className="font-bold text-slate-700 mb-4 text-sm uppercase tracking-wider">Data Wali <span className="font-normal text-slate-400">(Kosongkan jika tidak ada)</span></h4>
+
+                    {/* Auto-fill selector */}
+                    <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                      <label className="text-xs font-bold text-amber-800 block mb-1.5">⚡ Wali Calon Siswa Adalah:</label>
+                      <select
+                        value={formData.waliType || ''}
+                        onChange={handleWaliTypeChange}
+                        className="w-full px-3 py-2 bg-white border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-400/30 outline-none transition-all text-slate-700 text-sm font-semibold"
+                      >
+                        <option value="">-- Wali Lain (Isi manual) --</option>
+                        <option value="Ayah Kandung">Ayah Kandung (salin data ayah)</option>
+                        <option value="Ibu Kandung">Ibu Kandung (salin data ibu)</option>
+                      </select>
+                      {formData.waliType && (
+                        <p className="text-xs text-amber-700 mt-1.5">✓ Data {formData.waliType} disalin — masih bisa diubah.</p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input label="NIK Wali" name="nikWali" value={formData.nikWali} onChange={handleChange} placeholder="Opsional" />
+                      <Input label="Nama Lengkap Wali" name="namaWali" value={formData.namaWali} onChange={handleChange} placeholder="Opsional" />
+                      <Select label="Pekerjaan Wali" name="pekerjaanWali" value={formData.pekerjaanWali} onChange={handleChange} options={[
+                        { value: '', label: '-- Pilih --' }, { value: 'WIRASWASTA', label: 'Wiraswasta' },
+                        { value: 'KARYAWAN SWASTA', label: 'Karyawan Swasta' }, { value: 'PNS/TNI/POLRI', label: 'PNS/TNI/POLRI' },
+                        { value: 'PETANI', label: 'Petani' }, { value: 'LAINNYA', label: 'Lainnya' }
+                      ]} />
+                      <Input label="HP/WA Wali" name="hpWali" value={formData.hpWali} onChange={handleChange} placeholder="08..." />
                     </div>
                   </div>
                 </motion.div>

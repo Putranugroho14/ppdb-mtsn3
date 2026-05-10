@@ -95,6 +95,7 @@ const DaftarUlangWizard = ({ pendaftarId, onComplete }) => {
     pekerjaanIbu: 'URUSAN RUMAH TANGGA',
     penghasilanIbu: 'TIDAK ADA',
     hpIbu: '',
+    waliType: '',
     nikWali: '',
     namaWali: '',
     pendidikanWali: '',
@@ -141,6 +142,35 @@ const DaftarUlangWizard = ({ pendaftarId, onComplete }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Ketika pilih Wali = Ayah/Ibu Kandung → salin data ke field wali
+  const handleWaliTypeChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => {
+      const updates = { waliType: value };
+      if (value === 'Ayah Kandung') {
+        updates.nikWali        = prev.nikAyah;
+        updates.namaWali       = prev.namaAyah;
+        updates.pendidikanWali = prev.pendidikanAyah;
+        updates.pekerjaanWali  = prev.pekerjaanAyah;
+        updates.penghasilanWali= prev.penghasilanAyah;
+        updates.hpWali         = prev.hpAyah;
+      } else if (value === 'Ibu Kandung') {
+        updates.nikWali        = prev.nikIbu;
+        updates.namaWali       = prev.namaIbu;
+        updates.pendidikanWali = prev.pendidikanIbu;
+        updates.pekerjaanWali  = prev.pekerjaanIbu;
+        updates.penghasilanWali= prev.penghasilanIbu;
+        updates.hpWali         = prev.hpIbu;
+      } else if (value === '') {
+        // Reset wali fields when 'Orang Lain / Kosong' dipilih
+        updates.nikWali = ''; updates.namaWali = '';
+        updates.pendidikanWali = ''; updates.pekerjaanWali = '';
+        updates.penghasilanWali = ''; updates.hpWali = '';
+      }
+      return { ...prev, ...updates };
+    });
   };
 
   const handleSubmit = async () => {
@@ -392,6 +422,24 @@ const DaftarUlangWizard = ({ pendaftarId, onComplete }) => {
 
                 <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
                   <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">Data Wali (Kosongkan jika tidak ada)</h4>
+
+                  {/* Auto-fill selector */}
+                  <div className="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <label className="text-sm font-bold text-amber-800 block mb-2">⚡ Wali Calon Siswa Adalah:</label>
+                    <select
+                      value={formData.waliType || ''}
+                      onChange={handleWaliTypeChange}
+                      className="w-full px-4 py-2.5 bg-white border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-400/30 focus:border-amber-500 outline-none transition-all text-slate-700 font-semibold"
+                    >
+                      <option value="">-- Wali Lain (Isi manual) --</option>
+                      <option value="Ayah Kandung">Ayah Kandung (salin data ayah)</option>
+                      <option value="Ibu Kandung">Ibu Kandung (salin data ibu)</option>
+                    </select>
+                    {formData.waliType && (
+                      <p className="text-xs text-amber-700 mt-2 font-medium">✓ Data {formData.waliType} telah disalin. Anda tetap bisa mengubah field di bawah.</p>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input label="NIK Wali" name="nikWali" value={formData.nikWali} onChange={handleChange} maxLength={16} placeholder="Opsional" />
                     <Input label="Nama Lengkap Wali" name="namaWali" value={formData.namaWali} onChange={handleChange} placeholder="Opsional" />
