@@ -153,6 +153,27 @@ const addApplicant = async (req, res) => {
   }
 };
 
+const updateApplicant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const applicant = await Pendaftar.findByPk(id);
+    if (!applicant) return res.status(404).json({ message: 'Applicant not found' });
+
+    // Fields that should NOT be overwritten by this endpoint
+    const { password, password_plain, registrationNumber, registrationStatus, ...updateData } = req.body;
+
+    await applicant.update(updateData);
+
+    // LOG ACTION
+    await logAction(req, 'UPDATE_APPLICANT', 'Pendaftar', id, { name: applicant.name });
+
+    res.json({ message: 'Applicant updated successfully', applicant });
+  } catch (error) {
+    console.error('Update Applicant Error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const deleteApplicant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -239,6 +260,7 @@ module.exports = {
   updateRegistrationStatus,
   inputScore,
   addApplicant,
+  updateApplicant,
   deleteApplicant,
   toggleLock,
   resetPasswordPendaftar,

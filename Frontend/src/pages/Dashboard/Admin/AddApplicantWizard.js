@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X, User, Users, School, FileText, Star,
   ChevronLeft, ChevronRight, Save, Upload, Trash2, FolderOpen, RefreshCw
@@ -9,7 +9,8 @@ import { mapErrorMessage } from '../../../utils/errorMapper';
 import { AlertCircle } from 'lucide-react';
 import SchoolAutocomplete from '../../../components/SchoolAutocomplete';
 
-const AddApplicantWizard = ({ isOpen, onClose, onRefresh }) => {
+const AddApplicantWizard = ({ isOpen, onClose, onRefresh, initialData }) => {
+  const isEditMode = !!(initialData?.id);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,8 +28,55 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh }) => {
     namaIbu: '',
     namaWali: '',
     schoolOrigin: '',
-    birthCertificateNumber: ''
+    birthCertificateNumber: '',
+    jalurPendaftaran: '',
+    graduationYear: '',
+    agama: '',
+    parentPhone: '',
+    phone: ''
   });
+
+  // Pre-fill form when initialData (edit mode) changes
+  useEffect(() => {
+    if (initialData?.id) {
+      let parsedDetails = {};
+      try { if (initialData.details) parsedDetails = JSON.parse(initialData.details); } catch(e) {}
+
+      setFormData({
+        name: initialData.name || '',
+        nik: initialData.nik || '',
+        nisn: initialData.nisn || '',
+        birthPlace: initialData.birthPlace || '',
+        birthDate: initialData.birthDate ? initialData.birthDate.substring(0, 10) : '',
+        gender: initialData.gender || 'L',
+        address: initialData.address || '',
+        nikAyah: parsedDetails.nikAyah || initialData.nikAyah || '',
+        nikIbu: parsedDetails.nikIbu || initialData.nikIbu || '',
+        hubWali: parsedDetails.hubWali || initialData.hubWali || 'Ayah Kandung',
+        namaAyah: parsedDetails.namaAyah || initialData.namaAyah || '',
+        namaIbu: parsedDetails.namaIbu || initialData.namaIbu || '',
+        namaWali: parsedDetails.namaWali || initialData.namaWali || '',
+        schoolOrigin: initialData.schoolOrigin || '',
+        birthCertificateNumber: parsedDetails.birthCertificateNumber || initialData.birthCertificateNumber || '',
+        jalurPendaftaran: initialData.jalurPendaftaran || '',
+        graduationYear: parsedDetails.graduationYear || initialData.graduationYear || '',
+        agama: initialData.agama || '',
+        parentPhone: parsedDetails.parentPhone || initialData.parentPhone || '',
+        phone: initialData.phone || '',
+      });
+      setStep(1);
+    } else {
+      // Reset form for add mode
+      setFormData({
+        name: '', nik: '', nisn: '', birthPlace: '', birthDate: '',
+        gender: 'L', address: '', nikAyah: '', nikIbu: '',
+        hubWali: 'Ayah Kandung', namaAyah: '', namaIbu: '', namaWali: '',
+        schoolOrigin: '', birthCertificateNumber: '', jalurPendaftaran: '',
+        graduationYear: '', agama: '', parentPhone: '', phone: ''
+      });
+      setStep(1);
+    }
+  }, [initialData, isOpen]);
 
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState('');
@@ -91,14 +139,18 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh }) => {
     setLoading(true);
     try {
       const payload = { ...formData };
-      const detailsObj = {
-        prestasiList: []
-      };
-      
-
+      const detailsObj = { prestasiList: [] };
       payload.details = JSON.stringify(detailsObj);
-      await API.post('/admin/add-applicant', payload);
-      onRefresh();
+
+      if (isEditMode) {
+        // UPDATE existing applicant
+        await API.put(`/admin/applicant/${initialData.id}`, payload);
+      } else {
+        // CREATE new applicant
+        await API.post('/admin/add-applicant', payload);
+      }
+
+      if (onRefresh) onRefresh();
       onClose();
     } catch (error) {
       setError(mapErrorMessage(error));
@@ -119,7 +171,7 @@ const AddApplicantWizard = ({ isOpen, onClose, onRefresh }) => {
       >
         {/* Header */}
         <div className="bg-slate-50 p-4 border-b flex justify-between items-center">
-          <h2 className="text-lg font-bold text-slate-800">Input Calon Siswa</h2>
+        <h2 className="text-lg font-bold text-slate-800">{isEditMode ? 'Edit Data Siswa' : 'Input Calon Siswa'}</h2>
           <button onClick={onClose} className="p-1 hover:bg-slate-200 rounded-full transition-all">
             <X className="w-5 h-5 text-slate-500" />
           </button>

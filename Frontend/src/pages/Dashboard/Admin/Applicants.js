@@ -236,8 +236,9 @@ const Applicants = () => {
 
       <AddApplicantWizard 
         isOpen={isAddOpen} 
-        onClose={() => setIsAddOpen(false)} 
-        onSuccess={fetchApplicants}
+        onClose={() => { setIsAddOpen(false); setSelectedApp(null); }} 
+        onRefresh={fetchApplicants}
+        initialData={selectedApp}
       />
 
       <ApplicantDetailModal 

@@ -6,6 +6,7 @@ const {
   updateRegistrationStatus, 
   inputScore,
   addApplicant,
+  updateApplicant,
   deleteApplicant,
   toggleLock,
   resetPasswordPendaftar,
@@ -26,6 +27,7 @@ router.post('/toggle-lock', toggleLock);
 router.post('/reset-password-pendaftar', resetPasswordPendaftar);
 router.post('/verify-emis', verifyEmis);
 router.delete('/applicant/:id', deleteApplicant);
+router.put('/applicant/:id', updateApplicant);
 router.get('/print-bukti-v3/:id', generateBuktiPendaftaran);
 router.get('/print-form-emis/:id', generateBuktiDaftarUlang);
 router.get('/print-kartu-peserta/:id', generateKartuPeserta);
