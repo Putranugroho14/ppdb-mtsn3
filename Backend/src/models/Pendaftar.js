@@ -103,6 +103,7 @@ const Pendaftar = sequelize.define('Pendaftar', {
   ayahNik: { type: DataTypes.STRING(16), allowNull: true },
   ibuNik: { type: DataTypes.STRING(16), allowNull: true },
   ibuNama: { type: DataTypes.STRING, allowNull: true },
+  ibuPhone: { type: DataTypes.STRING, allowNull: true },
   waliCalonSiswa: { type: DataTypes.STRING, allowNull: true },
   waliNama: { type: DataTypes.STRING, allowNull: true },
   

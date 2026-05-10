@@ -94,8 +94,9 @@ const AdminEmisModal = ({ isOpen, onClose, applicant, onRefresh }) => {
         namaAyah:   data.parentName || parsedDetails.parentName || '',
         hpAyah:     data.parentPhone || parsedDetails.parentPhone || '',
         // --- Orang Tua Ibu ---
-        nikIbu:     data.ibuNik  || parsedDetails.ibuNik  || '',
-        namaIbu:    data.ibuNama || parsedDetails.ibuNama || '',
+        nikIbu:     data.ibuNik   || parsedDetails.ibuNik   || '',
+        namaIbu:    data.ibuNama  || parsedDetails.ibuNama  || '',
+        hpIbu:      data.ibuPhone || parsedDetails.hpIbu    || '',
         // --- Wali ---
         namaWali:   data.waliNama || parsedDetails.waliNama || '',
         // --- Alamat Sekolah Asal (nama sekolah sebagai petunjuk) ---

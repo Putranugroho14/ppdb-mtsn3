@@ -128,7 +128,7 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
     schoolOrigin: '', graduationYear: '', parentName: '', parentPhone: '',
     agama: 'ISLAM', noKK: '', namaKepalaKeluarga: '',
     provinsi: '', kecamatan: '', kodePos: '', kabupatenKota: '', kelurahanDesa: '', rt: '', rw: '', npsn: '',
-    ayahNik: '', ibuNik: '', ibuNama: '',
+    ayahNik: '', ibuNik: '', ibuNama: '', ibuPhone: '',
     waliCalonSiswa: 'Ayah Kandung', waliNama: '',
     sekolahAsalLainnya: '',
     nilaiRaportIVGanjil: '0', nilaiRaportIVGenap: '0',
@@ -616,6 +616,7 @@ const RegistrationWizard = ({ initialData, onComplete }) => {
 
                 <Input label="NIK Ibu" name="ibuNik" value={formData.ibuNik} onChange={handleChange} maxLength={16} minLength={16} pattern="\d{16}" title="NIK harus tepat 16 digit angka" error={fieldErrors.ibuNik} />
                 <Input label="Nama Ibu" name="ibuNama" value={formData.ibuNama} onChange={handleChange} pattern="^[a-zA-Z\s\.,']+$" title="Nama hanya boleh berisi huruf dan spasi" error={fieldErrors.ibuNama} />
+                <Input label="Nomor HP/WA Ibu" name="ibuPhone" value={formData.ibuPhone} onChange={handleChange} maxLength={14} minLength={10} pattern="^(08|628)\d{8,12}$" title="Nomor HP harus diawali 08 atau 628" placeholder="08..." />
 
                 <Select label="Wali Calon Siswa" name="waliCalonSiswa" value={formData.waliCalonSiswa} onChange={handleChange} options={[
                   { value: 'Ayah Kandung', label: 'Ayah Kandung' },

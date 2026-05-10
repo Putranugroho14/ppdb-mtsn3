@@ -119,8 +119,9 @@ const DaftarUlangWizard = ({ pendaftarId, onComplete }) => {
         if (data.parentPhone) newData.hpAyah = data.parentPhone;
         if (data.ibuNik) newData.nikIbu = data.ibuNik;
         if (data.ibuNama) newData.namaIbu = data.ibuNama;
+        if (data.ibuPhone) newData.hpIbu = data.ibuPhone; // Nomor HP Ibu
 
-        // If e-MIS data already exists, merge it (overrides pre-populated data with explicitly saved e-MIS data)
+        // If e-MIS data already exists, merge it
         if (data.DaftarUlang) {
           return { ...newData, ...data.DaftarUlang };
         }
